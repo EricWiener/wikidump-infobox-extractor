@@ -2,7 +2,30 @@
 
 To create a wikidump for a specific category or group of articles, you can use [Wikipedia's special export feature](https://en.wikipedia.org/wiki/Special%3aExport).
 
-Download the .xml file and then you can convert the xml dump to a .js file containing a list of infobox objects.
+Download the .xml file and then you can convert the xml dump to a .js file containing a list of infobox objects. The package is able to handle a variety of infoboxes and can correctly parse lists within infoboxes such as:
+```
+| Holding           = {{ordered list |style=text-align: left;
+    |1=States may not prohibit citizens from contracting insurance out of state for acts performed outside the state.
+    |2=States may not prohibit citizens from contracting insurance out of state by written communication, even if the property to be insured is within the state.
+    }}
+```
+
+The package can also handle multiline items (below will be handled as one element):
+```
+    |Prior=Patent application 07/479,666 filed, February 13, 1990;
+    Examiner's rejection affirmed by Board of Patent Appeals and Interferences, ''Ex parte Zurko, et al'', July 31, 1995 (_ USPQ 2d _, Appeal No. 94-3967);
+    request for reconsideration denied, December 1, 1995;
+    Board decision reversed, ''In re Zurko, et al'' 111 [[F.3d]] [https://law.justia.com/cases/federal/appellate-courts/F3/111/887/630610/ 887] ([[Fed. Cir.]] 1997);
+    reheard, Board decision reversed, 142 [[F.3d]] [https://law.justia.com/cases/federal/appellate-courts/F3/142/1447/506854/ 1447] (Fed. Cir. 1998) (en banc);
+    petition for writ of certiorari granted, {{ussc|525|961|1998|el=no}}
+```
+
+It is also handled when infobox elements are on the same line as the infobox declaration:
+```
+{{infobox| above       = Arizona v. California
+```
+
+Finally, infoboxes are matched regardless of proper spelling or capitalization (`nfobox, Infobox, infobox`) are all matched.
 
 ## Installation
 ```
@@ -12,6 +35,200 @@ $ pip3 install wikidump-infobox-extractor
 ## Usage
 ```
 $ infodump <xml dump file path> <output file path>
+```
+
+## Notes
+Wikidumps and Wikipedia pages have a lot of errors. This package does a pretty good job of dealing with them. However, you will likely need to do some key correction after the parse. Spelling, capitalization, and relevance all need to be analyzed.
+
+For instance, below are all the keys from Wikipedia's Supreme Court Cases (after I manually edited some pages on Wikipedia to remove non-Supreme Court Cases):
+
+If you wish to check your processed infoboxes, you can do something such as:
+```python
+import json
+
+f = open("./wiki-dump-out.js", 'r')
+case_dict = json.loads(f.read())
+f.close()
+
+keys = set()
+for obj in case_dict:
+    for key in obj:
+        keys.add(key)
+
+for key in sorted(keys):
+    print(key)
+```
+
+Keys from Wikipedia's Supreme Court Cases
+```
+Abrogated
+Advocates for Appellant
+Advocates for Appellee
+ArgueDate
+ArgueDate1
+ArgueDate2
+ArgueDateA
+ArgueDateB
+ArgueDateC
+ArgueYear
+Argument
+Claim
+Concur
+Concurrence
+Concurrence/Dissent
+Concurrence/Dissent2
+Concurrence/Dissent3
+Concurrence/Dissent4
+Concurrence/Dissent5
+Concurrence2
+Concurrence3
+Concurrence4
+Concurrence5
+Concurrence6
+DecideDate
+DecideYear
+Dissent
+Dissent2
+Dissent3
+Dissent4
+Docket
+Docket2
+Docket3
+FiledDate
+FiledYear
+FullName
+Fullname
+Holding
+JoinConcurrence
+JoinConcurrence/Dissent
+JoinConcurrence/Dissent2
+JoinConcurrence/Dissent3
+JoinConcurrence/Dissent4
+JoinConcurrence/Dissent5
+JoinConcurrence2
+JoinConcurrence3
+JoinConcurrence4
+JoinConcurrence5
+JoinConcurrence6
+JoinDissent
+JoinDissent2
+JoinDissent3
+JoinDissent4
+JoinMajority
+JoinMajority2
+JoinMajority3
+JoinPlurality
+JoinPlurality2
+LawsApplied
+Limited
+Litigants
+Litigants2
+Litigants3
+Majority
+Majority2
+Majority3
+NotParticipating
+Opinion
+OpinionAnnouncement
+Oral Argument
+OralArgument
+OralArguments
+OralReargument
+Outcome
+Overruled
+Overturned previous case
+ParallelCitations
+Parties
+PerCuriam
+PetitionDate
+PetitionYear
+Plurality
+Plurality2
+Prior
+Procedural
+QuestionsPresented
+QuestionsPresnted
+ReargueDate
+ReargueDate2
+ReargueDateA
+ReargueDateA2
+ReargueDateB
+ReargueDateB2
+ReargueYear
+ReargueYear2
+Related
+SCOTUS
+Seriatim
+Seriatim2
+Seriatim3
+Seriatim4
+SubmitDate
+SubmitYear
+Subsequent
+Superseded
+USPage
+USVol
+Vote
+above
+abovestyle
+bodystyle
+caption
+citations
+court
+data11
+data13
+data15
+data2
+data23
+data24
+data25
+data26
+data27
+data3
+data3class
+data4
+data5
+data6
+data7
+data8
+data9
+data9class
+date decided
+full name
+header1
+header10
+header12
+header14
+header2
+header3
+header4
+header5
+header6
+header7
+header8
+header9
+headerstyle
+image
+italic title
+judges
+label2
+label23
+label24
+label25
+label26
+label27
+label3
+label4
+label5
+label6
+label7
+label8
+label9
+name
+opinions
+prior actions
+subsequent actions
+title
 ```
 
 ## Example

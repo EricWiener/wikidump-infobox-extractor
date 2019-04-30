@@ -1,11 +1,11 @@
-import setuptools
+from setuptools import setup
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-setuptools.setup(
+setup(
     name="wikidump-infobox-extractor",
-    version="1.0.7",
+    version="1.2.0",
     author="Eric Wiener",
     author_email="ericwiener3@gmail.com",
     description="Wikidump infobox extractor.",
